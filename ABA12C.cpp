@@ -45,11 +45,14 @@ void solve()
                 packCount[i] = min(packCount[i], packCount[i - it->first] + 1);
                 minPrice[i] = min(minPrice[i], minPrice[i - it->first] + it->second);
             }
+
+            cout<<packCount[i]<<" ";
             if(packCount[i] == n) res = min(res, packCount[i]);
 
             if(i == k && packCount[i] < n) shouldAbort = true;
         }
 
+        cout<<"\n";
         if(shouldAbort) break;
     }
 
@@ -60,7 +63,7 @@ void solve()
 
 int main()
 {
-    //if(isDebug) inp;;
+    if(isDebug) inp;;
 
     int t;
     cin>>t;
