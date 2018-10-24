@@ -57,6 +57,11 @@ void solve()
     for(int i = 1; i <= n; i++)
     {
         res = min(res, dp[i][k]);
+        // for(int j = 1; j <= k; j++)
+        // {
+        //     cout<<dp[i][j]<<" ";
+        // }
+        // cout<<"\n";
     }
     
 
@@ -67,7 +72,7 @@ void solve()
 
 int main()
 {
-    if(isDebug) inp;;
+    //if(isDebug) inp;;
 
     int t;
     cin>>t;
