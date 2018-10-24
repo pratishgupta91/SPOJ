@@ -16,6 +16,9 @@ void solve()
 {
     int n, k;
     cin>>n>>k;
+
+    if(n == 0 || k == 0) { cout<<"-1\n";  return; }
+
     map<int, int> kgPrice;
 
     for(int i = 1; i <= k; i++)
@@ -26,38 +29,39 @@ void solve()
             kgPrice[i] = price;
     }
 
-    vector<int> packCount;
-    packCount.resize(k + 1, INT_MAX);
-    vector<int> minPrice;
-    minPrice.resize(k + 1, INT_MAX);
+    vector<vector<int>> dp(n + 1, vector<int>(k + 1, INT_MAX));
 
-    packCount[0] = 0;
-    minPrice[0] = 0;
-    int res = INT_MAX;
-    
-    for(auto it = kgPrice.begin(); it != kgPrice.end(); ++it)
+    for(int i = 1; i <= k; i++)
     {
-        bool shouldAbort = false;
-        for(int i = it->first; i <= k; ++i)
-        {
-            if(minPrice[i - it->first] + it->second < minPrice[i])
-            {
-                packCount[i] = min(packCount[i], packCount[i - it->first] + 1);
-                minPrice[i] = min(minPrice[i], minPrice[i - it->first] + it->second);
-            }
-
-            cout<<packCount[i]<<" ";
-            if(packCount[i] == n) res = min(res, packCount[i]);
-
-            if(i == k && packCount[i] < n) shouldAbort = true;
-        }
-
-        cout<<"\n";
-        if(shouldAbort) break;
+        dp[1][i] = (kgPrice.find(i) == kgPrice.end() ? INT_MAX : kgPrice[i]);
     }
 
-    if(res == INT_MAX) res = -1;
-    cout << res <<"\n";
+    for(int i = 2; i <= n; i++)
+    {
+        for(int j = i; j <= k; j++)
+        {
+            dp[i][j] = INT_MAX;
+            for(int q = i - 1; q <= j - 1; q++)
+            {
+                if(dp[i - 1][q] != INT_MAX && kgPrice.find(j - q) != kgPrice.end())
+                {
+                     dp[i][j] = min(dp[i][j], dp[i - 1][q] + kgPrice[j - q]);
+                }
+            }
+        }
+
+
+    }
+
+    int res = INT_MAX;
+    for(int i = 1; i <= n; i++)
+    {
+        res = min(res, dp[i][k]);
+    }
+    
+
+    res = (res == INT_MAX) ? -1 : res;
+    cout<< res <<"\n";
 
 }
 
