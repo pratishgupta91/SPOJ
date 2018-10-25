@@ -3,9 +3,11 @@
 #include <stack>
 #include <queue>
 #include <map>
+#include <stdio.h>
 #include <algorithm>
 #include <string>
 #include <utility>
+#include <unordered_map>
 #include <climits>
 #define inp freopen("in.txt", "r", stdin)
 
@@ -13,19 +15,12 @@ int isDebug = 1;
 
 using namespace std;
 
-struct Node
-{
-    int parent;
-    int rank;
-};
-
 class DSet
 {
 public:
     void makeSet(int a)
     {
-        if(m.find(a) != m.end()) return;
-        m[a] = {a, 0};
+        m[a] = a;
     }
 
     void union_set(int a, int b)
@@ -35,25 +30,18 @@ public:
 
         if(pa != pb)
         {
-            if(m[a].rank == m[b].rank)
-            {
-                m[b].parent = a;
-                m[a].rank++;
-            }
-            else if(m[a].rank > m[b].rank)  m[b].parent = a;
-            else m[a].parent = b;
+            m[pa] = pb;
         }
     }
 
     int find_parent(int a)
     {
         int cur = a;
-        while(cur != m[cur].parent)
+        while(cur != m[cur])
         {
-            cur = m[cur].parent;
+            cur = m[cur];
         }
 
-        m[a].parent = cur;
         return cur;
     }
 
@@ -63,65 +51,49 @@ public:
     }
 
 private:
-    map<int, Node> m;
+    int m[1000001];
 };
 
 void solve()
 {
     int n, k;
-    cin>>n>>k;
+    scanf("%d%d", &n, &k);
+    DSet ds;
+
+    for(int i = 0; i <= n; i++)
+    {
+        ds.makeSet(i);
+    }
+
     vector<pair<int, int> > eq;
     vector<pair<int, int> > neq;
 
+
     for(int i = 0; i < k; i++)
     {
-        for(int i = 0; i < 3; i++)
-        {
-            string temp;
-            cin>>temp;
-
-            int a, b;
-            bool isEq;
-            if(i == 0)
-            {
-                a = stoi(temp);
-            }
-            else if(i == 1)
-            {
-                isEq = (temp == "=");
-            }
-            else
-            {
-                b = stoi(temp);
-                if(isEq) eq.push_back({a, b});
-                else neq.push_back({a, b});
-            }
-
+        int a, b;
+		char comp[3];
+		scanf("%d%s%d", &a, comp, &b);
+        if (comp[0]=='='){
+            ds.union_set(a, b);
+        }
+        else{
+            neq.push_back(make_pair(a,b));
         }
     }
 
-    DSet ds;
-
-    for(int i = 0; i < eq.size(); i++)
-    {
-        ds.makeSet(eq[i].first);
-        ds.makeSet(eq[i].second);
-
-        ds.union_set(eq[i].first, eq[i].second);
-    }
-
     bool isFine = true;
+
     for(int i = 0; i < neq.size(); i++)
     {
-        ds.makeSet(neq[i].first);
-        ds.makeSet(neq[i].second);
-
-        if(ds.isConnected(neq[i].first, neq[i].second)) { isFine = false; break; }
-
+        if(ds.isConnected(neq[i].first, neq[i].second)) {isFine = false; break; }
     }
-
-    if(isFine) cout<<"YES\n";
-    else cout<<"NO\n";
+    if (!isFine){
+        printf("NO\n");
+    }
+    else{
+        printf("YES\n");
+    }
 }
 
 int main()
